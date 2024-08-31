@@ -1,8 +1,9 @@
-import { Module } from "@nestjs/common";
+import { Logger, Module, OnApplicationBootstrap } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { TelegrafModule } from "nestjs-telegraf";
+import { InjectBot, TelegrafModule } from "nestjs-telegraf";
 import { getConfig } from "./config";
 import { EchoModule } from "./echo/echo.module";
+import { Context, Telegraf } from "telegraf";
 
 @Module({
   imports: [
@@ -22,4 +23,11 @@ import { EchoModule } from "./echo/echo.module";
     EchoModule
   ]
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(@InjectBot() private readonly bot: Telegraf<Context>) {}
+
+  async onApplicationBootstrap() {
+    const me = await this.bot.telegram.getMe();
+    Logger.log(`${me.username} started. Listening messages...`);
+  }
+}
