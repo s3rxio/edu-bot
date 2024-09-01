@@ -4,7 +4,8 @@ import { InjectBot, TelegrafModule } from "nestjs-telegraf";
 import { appConfig } from "./config";
 import { EchoModule } from "./echo/echo.module";
 import { Context, Telegraf } from "telegraf";
-import { TelegrafConfig } from "./common/types";
+import { DbConfig, TelegrafConfig } from "./common/types";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
@@ -17,6 +18,12 @@ import { TelegrafConfig } from "./common/types";
       ],
       load: [appConfig],
       isGlobal: true
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) =>
+        configService.get<DbConfig>("db"),
+      inject: [ConfigService]
     }),
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
