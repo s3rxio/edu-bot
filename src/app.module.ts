@@ -1,9 +1,10 @@
 import { Logger, Module, OnApplicationBootstrap } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { InjectBot, TelegrafModule } from "nestjs-telegraf";
-import { getConfig } from "./config";
+import { appConfig } from "./config";
 import { EchoModule } from "./echo/echo.module";
 import { Context, Telegraf } from "telegraf";
+import { TelegrafConfig } from "./common/types";
 
 @Module({
   imports: [
@@ -14,11 +15,14 @@ import { Context, Telegraf } from "telegraf";
         `.env`,
         `.env.local`
       ],
-      load: [getConfig],
+      load: [appConfig],
       isGlobal: true
     }),
-    TelegrafModule.forRoot({
-      token: process.env.TELEGRAF_TOKEN
+    TelegrafModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) =>
+        configService.get<TelegrafConfig>("telegraf"),
+      inject: [ConfigService]
     }),
     EchoModule
   ]

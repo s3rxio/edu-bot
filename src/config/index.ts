@@ -1,5 +1,6 @@
+import { AppConfig } from "@/common/types";
 import { telegrafConfig } from "./telegraf.config";
 
-export const getConfig = () => ({
-  telegraf: telegrafConfig
+export const appConfig = (): AppConfig => ({
+  telegraf: telegrafConfig()
 });
