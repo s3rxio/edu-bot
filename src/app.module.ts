@@ -6,6 +6,9 @@ import { EchoModule } from "./echo/echo.module";
 import { Context, Telegraf } from "telegraf";
 import { DbConfig, TelegrafConfig } from "./common/types";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { GroupModule } from "./group/group.module";
+import { APP_FILTER } from "@nestjs/core";
+import { TelegrafExceptionFilter } from "./common/filters";
 
 @Module({
   imports: [
@@ -31,7 +34,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
         configService.get<TelegrafConfig>("telegraf"),
       inject: [ConfigService]
     }),
-    EchoModule
+    EchoModule,
+    GroupModule
+  ],
+  providers: [
+    // Filters
+    // {
+    //   provide: APP_FILTER,
+    //   useValue: TelegrafExceptionFilter
+    // }
   ]
 })
 export class AppModule implements OnApplicationBootstrap {
